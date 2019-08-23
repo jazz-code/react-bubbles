@@ -50,7 +50,7 @@ const ColorList = ({ colors, updateColors }) => {
         console.log("PUT success", res);
       })
       .catch(err => console.log(err.response));
-      
+
     updateColors(
       colors.map(color => {
         if (color.id === colorToEdit.id) {
@@ -77,12 +77,15 @@ const ColorList = ({ colors, updateColors }) => {
     axiosWithAuth()
       .delete(`https://localhost:5000/api/colors/${colorToEdit.id}`)
       .then(res => {
+        console.log("delete", res)
        updateColors(res.data);
       })
       .catch(err => console.log("error",err.response));
+
+      updateColors(colors.filter(el => el.id != color.id));
+    
   };
-  //     setColorToEdit(colorToEdit.filter(color => color.id != `${colorToEdit.id}`));
-  // };
+  
 
   return (
     <div className="colors-wrap">
