@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { axiosWithAuth } from "./utils/axiosWithAuth";
 
 const initialColor = {
   color: "",
@@ -7,9 +8,31 @@ const initialColor = {
 };
 
 const ColorList = ({ colors, updateColors }) => {
-  console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+
+  console.log("update Colors", updateColors)
+  
+  console.log("colors in colorList", colors);
+  // console.log("editing", editing)
+  console.log("colorToEdit", colorToEdit)
+
+  // const [color, setColor] = useState([]);
+
+
+  // useEffect(() => {
+  //   axiosWithAuth()
+  //     .get("http://localhost:5000/api/colors")
+  //     .then(res => setColor(res.data))
+  //     .catch(err => console.log(err.response));
+
+  // }, [])
+    
+  // const updateColor = updatedColor => {
+  //       setColor(color.map(color => (
+  //         color.id === updatedColor.id ? updatedColor : color
+  //       )));
+  //     };
 
   const editColor = color => {
     setEditing(true);
@@ -21,11 +44,48 @@ const ColorList = ({ colors, updateColors }) => {
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    axiosWithAuth()
+      .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        console.log("PUT success", res);
+      })
+      .catch(err => console.log(err.response));
+
+    updateColors(
+      colors.map(color => {
+        if (color.id === colorToEdit.id) {
+          return colorToEdit;
+        } else {
+          return color;
+        }
+      })
+    );
   };
+  // axiosWithAuth()
+  //   .put(`https://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
+  //   .then(res => {
+  //     console.log("color-list",res)
+  //     setEditing(true)
+  //     setColorToEdit(initialColor)
+  //     updateColors(res.data)
+      
+  //   })
+  //   .catch(err => console.log("error", err.response))
+  // };
 
   const deleteColor = color => {
-    // make a delete request to delete this color
+    axiosWithAuth()
+      .delete(`https://localhost:5000/api/colors/${colorToEdit.id}`)
+      .then(res => {
+        console.log("delete", res)
+       updateColors(res.data);
+      })
+      .catch(err => console.log("error",err.response));
+
+      updateColors(colors.filter(el => el.id != color.id));
+    
   };
+  
 
   return (
     <div className="colors-wrap">
